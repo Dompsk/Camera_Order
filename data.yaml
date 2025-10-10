@@ -1,0 +1,8 @@
+train: D:/ปี3เทอม1/A.I/Camera_Order/dataset/train
+val: D:/ปี3เทอม1/A.I/Camera_Order/dataset/val
+
+names:
+  0: ขนม
+  1: ขวดน้ำเล็ก
+  2: ขวดน้ำใหญ่
+  3: ปากกา
