@@ -1,8 +1,10 @@
-train: D:/ปี3เทอม1/A.I/Camera_Order/dataset/train
-val: D:/ปี3เทอม1/A.I/Camera_Order/dataset/val
+# ที่อยู่ของโฟลเดอร์ "รูปภาพ" สำหรับ train และ val
+train: ./dataset/train/images
+val: ./dataset/val/images
 
+# nc คือ จำนวนคลาสทั้งหมด (ต้องมี)
+nc: 1
+
+# names คือ ชื่อของคลาสทั้งหมด (แนะนำให้ใช้รูปแบบ list)
 names:
-  0: ขนม
-  1: ขวดน้ำเล็ก
-  2: ขวดน้ำใหญ่
-  3: ปากกา
+  - ขวดน้ำ

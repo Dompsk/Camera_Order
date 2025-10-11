@@ -1,56 +1,50 @@
+# นำเข้าไลบรารีที่จำเป็น
 from ultralytics import YOLO
 import cv2
 
-# โหลดโมเดลจาก path ที่ถูกต้อง
-model = YOLO(r"D:\ปี3เทอม1\A.I\Camera_Order\runs\train\best\weights\best.pt")
+# --- 1. โหลดโมเดลที่เทรนเสร็จแล้ว ---
+# ✅ สำคัญ: จากรูปที่คุณส่งมา ไฟล์ best.pt ควรจะอยู่ที่ path นี้
+# หากไม่เจอ ให้ตรวจสอบในโฟลเดอร์ runs ของคุณอีกครั้ง
+model = YOLO(r'C:\Users\Nitro\Desktop\CODING\Camera_Order\runs\detect\train\weights\best.pt')
 
-# แม็ปราคา
-product_prices = {
-    "ขนม": 10,
-    "ขวดน้ำเล็ก": 5,
-    "ขวดน้ำใหญ่": 15,
-    "ปากกา": 7
-}
+# --- 2. เปิดใช้งานกล้อง Webcam ---
+# cv2.VideoCapture(0) คือการใช้กล้องหลักของเครื่อง
+# ถ้าใช้กล้องอื่นอาจเปลี่ยนเป็น 1, 2, ...
+cap = cv2.VideoCapture(0)
 
-# สแกนหากล้องที่ใช้งานได้
-cap = None
-for i in range(5):
-    temp_cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-    if temp_cap.isOpened():
-        cap = temp_cap
-        print(f"ใช้กล้องที่ index {i}")
-        break
-
-if cap is None:
-    print("ไม่พบกล้องที่ใช้งานได้")
+# ตรวจสอบว่าเปิดกล้องได้หรือไม่
+if not cap.isOpened():
+    print("Error: ไม่สามารถเปิดกล้องได้")
     exit()
 
+# --- 3. เริ่มลูปเพื่ออ่านภาพจากกล้องและตรวจจับ ---
 while True:
+    # อ่านภาพทีละเฟรมจากกล้อง
+    # ret จะเป็น True หากอ่านสำเร็จ, frame คือภาพที่อ่านได้
     ret, frame = cap.read()
     if not ret:
-        print("อ่าน frame ไม่ได้")
+        print("Error: ไม่สามารถรับภาพจากกล้องได้")
         break
 
-    # ตรวจจับวัตถุ
-    results = model(frame)
+    # --- 4. ส่งภาพไปให้โมเดลตรวจจับ ---
+    # โมเดลจะคืนผลลัพธ์การตรวจจับทั้งหมดในเฟรมนั้นๆ
+    results = model(frame, conf=0.1)
 
-    for r in results:
-        for box in r.boxes:
-            cls_id = int(box.cls[0])
-            label = model.names[cls_id]
-            conf = float(box.conf[0])
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            price = product_prices.get(label, "N/A")
+    print(f"Found {len(results[0].boxes)} objects in this frame.")
 
-            # วาดกรอบและข้อความ
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f"{label}: {price} บาท ({conf:.2f})",
-                        (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    # --- 5. แสดงผลลัพธ์บนภาพ ---
+    # results[0].plot() เป็นคำสั่งพิเศษของ YOLOv8
+    # ที่จะวาดกรอบ, ชื่อคลาส, และค่าความมั่นใจลงบนภาพให้โดยอัตโนมัติ
+    annotated_frame = results[0].plot()
 
-    cv2.imshow("Product Detection", frame)
+    # แสดงภาพที่วาดกรอบแล้วในหน้าต่างใหม่
+    cv2.imshow("Real-time Object Detection", annotated_frame)
 
+    # --- 6. รอรับการกดปุ่ม 'q' เพื่อปิดโปรแกรม ---
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        print("กำลังปิดโปรแกรม...")
         break
 
+# --- 7. ปิดการใช้งานกล้องและหน้าต่างทั้งหมด ---
 cap.release()
 cv2.destroyAllWindows()
