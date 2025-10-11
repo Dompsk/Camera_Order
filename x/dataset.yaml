@@ -1,0 +1,5 @@
+train: dataset/train/images
+val: dataset/val/images
+
+nc: 1  # จำนวน class (วัตถุที่คุณตรวจจับ)
+names: ['my_object']  # ชื่อ class
