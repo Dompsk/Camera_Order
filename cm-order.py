@@ -5,7 +5,7 @@ import cv2
 # --- 1. โหลดโมเดลที่เทรนเสร็จแล้ว ---
 # ✅ สำคัญ: จากรูปที่คุณส่งมา ไฟล์ best.pt ควรจะอยู่ที่ path นี้
 # หากไม่เจอ ให้ตรวจสอบในโฟลเดอร์ runs ของคุณอีกครั้ง
-model = YOLO(r'C:\Users\Nitro\Desktop\CODING\Camera_Order\runs\detect\train\weights\best.pt')
+model = YOLO(r'D:\ปี3เทอม1\A.I\Camera_Order\best.pt')
 
 # --- 2. เปิดใช้งานกล้อง Webcam ---
 # cv2.VideoCapture(0) คือการใช้กล้องหลักของเครื่อง
@@ -27,8 +27,8 @@ while True:
         break
 
     # --- 4. ส่งภาพไปให้โมเดลตรวจจับ ---
-    # โมเดลจะคืนผลลัพธ์การตรวจจับทั้งหมดในเฟรมนั้นๆ
-    results = model(frame, conf=0.1)
+    # ปรับให้ตรวจจับไวขึ้น (อาจมีผลผิดพลาดบ้าง) แต่กรองกรอบซ้อนได้ดีขึ้น
+    results = model(frame, conf=0.65, classes=[0 ,1, 2])
 
     print(f"Found {len(results[0].boxes)} objects in this frame.")
 
